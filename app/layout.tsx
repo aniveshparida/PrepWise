@@ -26,7 +26,7 @@ export default function RootLayout({
       lang="en"
       className={cn("dark", "font-sans", inter.variable)}
     >
-      <body className={`${monaSans.className}anitialised`}>{children}</body>
+      <body className={`${monaSans.className}anitialised pattern`}>{children}</body>
     </html>
   );
 }
