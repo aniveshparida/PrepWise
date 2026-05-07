@@ -3,7 +3,7 @@ import AuthForm from "@/components/ui/AuthForm"
 const page = () => {
   return (
     <div>
-       return <AuthForm type="sign-up"/>
+       <AuthForm type="sign-up"/>
     </div>
   )
 }
