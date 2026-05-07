@@ -3,18 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import Image from "next/image"
 
-// Import shadcn UI components
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Form } from "@/components/ui/form"
+import AuthFormFields from "@/components/ui/FormField"
+import Link from "next/link"
 
 // Unified form schema – `name` is optional so it can be toggled per form type
 const formSchema = z.object({
@@ -37,7 +31,7 @@ type AuthFormProps = {
 
 export default function AuthForm({ type }: AuthFormProps) {
   const isSignUp = type === "sign-up"
-
+  const isSignIn = type === "sign-in"
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,60 +47,33 @@ export default function AuthForm({ type }: AuthFormProps) {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-md w-full">
-        <h2 className="text-2xl font-bold">
-          {isSignUp ? "Create an account" : "Sign in"}
-        </h2>
+    <div className="card-border lg:min-w-[566px]">
+      <div className="flex flex-col gap-6 card py-14 px-10">
+        <div className="flex flex-row gap-2 justify-center">
+          <Image src="/logo.svg" alt="logo" height={32} width={38} />
+          <h2 className="text-primary-100">Prepwise</h2>
+        </div>
+        <h3>Practice job interview with AI</h3>
 
-        {isSignUp && (
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4 w-full form">
+            <h2 className="text-2xl font-bold">
+              {isSignUp ? "Create an account" : "Sign in"}
+            </h2>
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" placeholder="you@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="••••••" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit" className="w-full">
-          {isSignUp ? "Sign Up" : "Sign In"}
-        </Button>
-      </form>
-    </Form>
+            <AuthFormFields isSignUp={isSignUp} />
+            <Button type="submit" className="btn">
+              {isSignIn ? "Sign In" : "Create an Account"}
+            </Button>
+          </form>
+        </Form>
+        <p className="text-center">
+          {isSignIn ? "No account yet?" : "Have an account already?"}
+          <Link className="text-user-primary ml-1 font-bold" href={!isSignIn ? "/sign-in" : "/sign-up"}>
+            {isSignIn ? "Sign Up" : "Sign In"}
+          </Link>
+        </p>
+      </div>
+    </div>
   )
 }
