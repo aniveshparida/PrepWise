@@ -4,34 +4,36 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Image from "next/image"
-
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import AuthFormFields from "@/components/ui/FormField"
 import Link from "next/link"
-
+import {toast} from "sonner"
+import { signIn, signUp } from "@/lib/actions/auth.action";
+import FormField from "./FormField";
 // Unified form schema – `name` is optional so it can be toggled per form type
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }).optional(),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
+const authFormSchema = (type:FormType)=>
+  { 
+    return  z.object({
+    name: type==='sign-up' ? z.string().min(3):z.string().optional(),
+    email: z.string().email(),
+    password: z.string().min(3),
 })
+}
 
-type FormValues = z.infer<typeof formSchema>
 
 type AuthFormProps = {
   type: "sign-in" | "sign-up"
 }
 
+
 export default function AuthForm({ type }: AuthFormProps) {
   const isSignUp = type === "sign-up"
   const isSignIn = type === "sign-in"
+  const formSchema=authFormSchema(type)
+  const router= useRouter();
+  type FormValues = z.infer<typeof formSchema>
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,9 +43,20 @@ export default function AuthForm({ type }: AuthFormProps) {
     },
   })
 
-  function onSubmit(values: FormValues) {
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    try{
+       if(type==='sign-up'){
+        toast.success('Account created sucessfully.Please sign in.')
+        router.push('/sign-in')
+       }
+       else{
+        toast.success('sign in successfully')
+        router.push('/')
+       }
+    }catch(error){
+       console.log(error);
+       toast.error(`There was an error: ${error}`)
+    }
   }
 
   return (
@@ -57,12 +70,33 @@ export default function AuthForm({ type }: AuthFormProps) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4 w-full form">
-            <h2 className="text-2xl font-bold">
-              {isSignUp ? "Create an account" : "Sign in"}
-            </h2>
+             {!isSignIn && (
+              <FormField
+                control={form.control}
+                name="name"
+                label="Name"
+                placeholder="Your Name"
+                type="text"
+              />
+            )}
 
-            <AuthFormFields isSignUp={isSignUp} />
-            <Button type="submit" className="btn">
+            <FormField
+              control={form.control}
+              name="email"
+              label="Email"
+              placeholder="Your email address"
+              type="email"
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              label="Password"
+              placeholder="Enter your password"
+              type="password"
+            />
+
+            <Button className="btn" type="submit">
               {isSignIn ? "Sign In" : "Create an Account"}
             </Button>
           </form>

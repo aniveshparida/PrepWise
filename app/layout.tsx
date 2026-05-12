@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Mona_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
+import { Toaster } from "sonner";
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const monaSans = Mona_Sans({
@@ -26,7 +26,10 @@ export default function RootLayout({
       lang="en"
       className={cn("dark", "font-sans", inter.variable)}
     >
-      <body className={`${monaSans.className}anitialised pattern`}>{children}</body>
+      <body className={`${monaSans.className}anitialised pattern`}>
+        {children}
+        <Toaster/>
+        </body>
     </html>
   );
 }
